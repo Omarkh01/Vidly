@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 
+// const session: ClientSession = await mongoose.startSession();
+
 router.get('/', async (req, res) => {
     const rentals = await Rental.find().sort('-dateOut');
     res.send(rentals);
@@ -34,34 +36,32 @@ router.post('/', async (req, res) => {
             dailyRentalRate: movie.dailyRentalRate
         }
     });
-    rental = await rental.save();
-
-    movie.numberInStock--;
-    movie.save();
-
-    res.send(rental);
-})
-
-router.put('/:id', async (req, res) => {
-    const { error } = validate(req.body);
-    if(error) return res.status(400).send(error.details[0].message);
     
-    const rental = await Rental.findByIdAndUpdate(req.params.id, {
-        title: req.body.title,
-        numberInStock: req.body.numberInStock,
-        dailyRentalRate: req.body.dailyRentalRate
-    }, {new: true});
-    if(!rental) return res.status(404).send('The rental with the given id was not found..');
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    res.send(rental);
-})  
+    try {
+	// TODO Add your statement here
+        rental = await rental.save();
 
-router.delete('/:id', async (req, res) => {
-    const rental = await Rental.findByIdAndRemove(req.params.id);
+        movie.numberInStock--;
+        movie.save()
 
-    if(!rental) return res.status(404).send('The rental with the given id was not found..');
-    
-    res.send(rental);
+        res.send(rental);
+	// Commit the changes
+	await session.commitTransaction();
+    } 
+    catch (error) {
+	// Rollback any changes made in the database
+	await session.abortTransaction();
+    res.status(500).send('Something failed..');
+	// Rethrow the error
+	throw error;
+    } 
+    finally {
+	// Ending the session
+	session.endSession();
+    }
 })
 
 module.exports = router;
