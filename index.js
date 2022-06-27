@@ -1,3 +1,6 @@
+require('express-async-errors');
+const winston = require('winston');
+require('winston-mongodb');
 const error = require('./middleware/error');
 const config = require('config');
 const Joi = require('joi');
@@ -11,6 +14,25 @@ const users = require('./routes/users');
 const auth = require('./routes/auth');
 const app = express();
 const mongoose = require('mongoose');
+    
+const logger = winston.createLogger({
+    transports: [
+        new winston.transports.Console(),
+    ],
+    exceptionHandlers: [
+        new winston.transports.File({ filename: 'uncaughtExceptions.log' }),
+    ],
+    rejectionHandlers:[
+        new winston.transports.File({ filename: 'uncaughtRejections.log' }),
+    ],
+    exitOnError: false 
+}) 
+
+winston.add(new winston.transports.MongoDB({ db: 'mongodb://localhost/vidly'}));
+
+throw new Error('Something failed during startup');
+// const p = Promise.reject(new Error('Something failed miserably!'));
+// p.then(() => console.log('Yes'));
 
 if(!config.get('jwtPrivateKey')){
     console.log('FATAL ERROR');
