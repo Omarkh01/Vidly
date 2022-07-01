@@ -8,9 +8,10 @@ require('./startup/db')();
 require('./startup/config')();
 require('./startup/validation')();
 
-throw new Error('Something failed');
+console.log(process.env.NODE_ENV);
+
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => winston.info(`Listening on port ${port}...`));
+const server = app.listen(port, () => console.log(`Listening on port ${port}...`));
 
-
+module.exports = server;

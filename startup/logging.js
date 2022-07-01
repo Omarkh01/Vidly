@@ -1,29 +1,32 @@
 const winston = require('winston');
-require('winston-mongodb');
+const { format } = winston;
+// require('winston-mongodb');
 require('express-async-errors');
 
 module.exports = function (){
     const logger = winston.createLogger({
+        level: 'info',
+        format: format.combine(
+            format.json(),
+            format.colorize()
+        ),
+        transports: [
+            new winston.transports.File({
+                filename: 'combined.log'
+            })
+        ],   
         exceptionHandlers: [
-            new winston.transports.Console({
-                format: winston.format.combine(
-                    winston.format.colorize(),
-                    winston.format.json()
-                )
-            }),
-            new winston.transports.File({ filename: 'uncaughtExceptions.log' }),
+            new winston.transports.File({ 
+                filename: 'uncaughtExceptions.log'
+            })
         ],
         rejectionHandlers:[
-            new winston.transports.Console({
-                format: winston.format.combine(
-                    winston.format.colorize(),
-                    winston.format.json()
-                )
-            }),
-            new winston.transports.File({ filename: 'uncaughtRejections.log' }),
+            new winston.transports.File({ 
+                filename: 'uncaughtRejections.log'
+            })
         ], 
         exitOnError: true,
     })
     
-    winston.add(new winston.transports.MongoDB({ db: 'mongodb://localhost/vidly'}));
+    // winston.add(new winston.transports.MongoDB({ db: 'mongodb://localhost/vidly'}));
 }
