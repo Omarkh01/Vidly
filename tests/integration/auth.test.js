@@ -4,7 +4,6 @@ const request = require('supertest');
 
 describe('auth middleware', () => {
     
-    
     let token;
     let server;
     
