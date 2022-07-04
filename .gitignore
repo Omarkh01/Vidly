@@ -3,3 +3,4 @@ node_modules/
 routes/genres-1.js
 package-lock.json
 coverage/
+.env
