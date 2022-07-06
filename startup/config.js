@@ -1,7 +1,10 @@
-require('dotenv').config();
+// require('dotenv').config();
+const config = require('config');
 
 module.exports = function() {
-    if(!process.env.jwtPrivateKey){
+    // console.log('running');
+
+    if(!config.get('jwtPrivateKey')){
         throw new Error('FATAL ERROR: jwtPrivateKey is not defined.');
     }
 }

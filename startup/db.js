@@ -1,20 +1,24 @@
 const winston = require('winston');
 const mongoose = require('mongoose');
 const config = require('config');
-require('dotenv').config();
+// require('dotenv').config();
 
 module.exports = function() {
     const db = config.get('db');
-    if(process.env.STATUS === 'production' ) {
-        mongoose.connect(process.env.DATABASE, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        })
-        .then(() => console.log('Connected to production DATABASE...')); 
-    }
-
-    else {
-        mongoose.connect(db)
-        .then(() => console.log(`Connected to ${db}...`));
-    }
+    
+    // if(process.env.STATUS === 'production' ) {
+    //     mongoose.connect(process.env.DATABASE, {
+    //         useNewUrlParser: true,
+    //         useUnifiedTopology: true,
+    //     })
+    //     .then(() => console.log('Connected to production DATABASE...')); 
+    // }
+    // else {
+    //     mongoose.connect(db)
+    //     .then(() => console.log(`Connected to ${db}...`));
+    // }
+    mongoose
+        .connect(db)
+        .then(() => console.log(`Connected to ${db}...`))
+        .catch((ex) => console.log('Could not connect.'));
 }
